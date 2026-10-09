@@ -143,7 +143,7 @@ void flv_print_firstvt(const Grammar *g, const FLVResult *r)
         printf("    FIRSTVT(%s) = { ", g->nts[i].name);
         bool first = true;
         for (int t = 0; t < g->t_cnt; t++) {
-            if (TS_HAS(r->firstvt[i], g->ts[t].idx)) {
+            if (TS_HAS(r->firstvt[i], t)) {
                 if (!first) printf(", ");
                 printf("%s", g->ts[t].name);
                 first = false;
@@ -162,7 +162,7 @@ void flv_print_lastvt(const Grammar *g, const FLVResult *r)
         printf("    LASTVT(%s) = { ", g->nts[i].name);
         bool first = true;
         for (int t = 0; t < g->t_cnt; t++) {
-            if (TS_HAS(r->lastvt[i], g->ts[t].idx)) {
+            if (TS_HAS(r->lastvt[i], t)) {
                 if (!first) printf(", ");
                 printf("%s", g->ts[t].name);
                 first = false;

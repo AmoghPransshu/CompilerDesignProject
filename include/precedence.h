@@ -28,7 +28,7 @@ const char *rel_name(Rel r);
 typedef struct {
     Rel    **tbl;       /* [t_cnt][t_cnt] */
     int      t_cnt;
-    char    *names[20];  /* terminal name pointers */
+    const char *names[20];  /* terminal name pointers */
     bool     conflict;
     int      n_conflict;
 } PrecTable;

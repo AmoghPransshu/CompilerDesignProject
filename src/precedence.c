@@ -107,14 +107,13 @@ void prec_build(const Grammar *g, const FLVResult *fl, PrecTable *pt)
             } else if (X->type == T && Y->type == NT) {
                 printf("term-nonterm => < FIRSTVT(%s)\n", Y->name);
                 int xi = term_pos(g, X->name);
-                int b = X->idx;  /* wait, Y's non-terminal index */
                 /* find Y's non-terminal index */
                 int y_nt = -1;
                 for (int k = 0; k < g->nt_cnt; k++) {
                     if (strcmp(g->nts[k].name, Y->name) == 0) { y_nt = k; break; }
                 }
                 for (int t = 0; t < g->t_cnt; t++) {
-                    if (TS_HAS(fl->firstvt[y_nt], g->ts[t].idx)) {
+                    if (TS_HAS(fl->firstvt[y_nt], t)) {
                         int ti = term_pos(g, g->ts[t].name);
                         set_rel(pt, xi, ti, LT);
                     }
@@ -128,7 +127,7 @@ void prec_build(const Grammar *g, const FLVResult *fl, PrecTable *pt)
                     if (strcmp(g->nts[k].name, X->name) == 0) { x_nt = k; break; }
                 }
                 for (int t = 0; t < g->t_cnt; t++) {
-                    if (TS_HAS(fl->lastvt[x_nt], g->ts[t].idx)) {
+                    if (TS_HAS(fl->lastvt[x_nt], t)) {
                         int ti = term_pos(g, g->ts[t].name);
                         set_rel(pt, ti, yi, GT);
                     }
@@ -143,9 +142,9 @@ void prec_build(const Grammar *g, const FLVResult *fl, PrecTable *pt)
                     if (strcmp(g->nts[k].name, Y->name) == 0) y_nt = k;
                 }
                 for (int xt = 0; xt < g->t_cnt; xt++) {
-                    if (TS_HAS(fl->lastvt[x_nt], g->ts[xt].idx)) {
+                    if (TS_HAS(fl->lastvt[x_nt], xt)) {
                         for (int yt = 0; yt < g->t_cnt; yt++) {
-                            if (TS_HAS(fl->firstvt[y_nt], g->ts[yt].idx)) {
+                            if (TS_HAS(fl->firstvt[y_nt], yt)) {
                                 int xi = term_pos(g, g->ts[xt].name);
                                 int yi = term_pos(g, g->ts[yt].name);
                                 set_rel(pt, xi, yi, LT);
@@ -164,7 +163,7 @@ void prec_build(const Grammar *g, const FLVResult *fl, PrecTable *pt)
 
     printf("      $ < FIRSTVT(E): ");
     for (int t = 0; t < g->t_cnt; t++) {
-        if (TS_HAS(fl->firstvt[e_nt], g->ts[t].idx)) {
+        if (TS_HAS(fl->firstvt[e_nt], t)) {
             int ti = term_pos(g, g->ts[t].name);
             set_rel(pt, dp, ti, LT);
             printf("%s ", g->ts[t].name);
@@ -174,7 +173,7 @@ void prec_build(const Grammar *g, const FLVResult *fl, PrecTable *pt)
 
     printf("      LASTVT(E) > $: ");
     for (int t = 0; t < g->t_cnt; t++) {
-        if (TS_HAS(fl->lastvt[e_nt], g->ts[t].idx)) {
+        if (TS_HAS(fl->lastvt[e_nt], t)) {
             int ti = term_pos(g, g->ts[t].name);
             set_rel(pt, ti, dp, GT);
             printf("%s ", g->ts[t].name);
@@ -229,11 +228,10 @@ void prec_print(const PrecTable *pt)
     printf("    >  : takes precedence (reduce)\n\n");
 }
 
-void prec_print_rel(const PrecTable *pt, const char *a, const char *ai, const char *b)
+void prec_print_rel(const PrecTable *pt, const char *a, const char *b)
 {
     int ai_idx = tbl_pos(pt, a);
     int bi_idx = tbl_pos(pt, b);
-    (void)ai; (void)b;
 
     if (ai_idx < 0 || bi_idx < 0) {
         printf("  Terminal not found.\n");
